@@ -4,11 +4,13 @@ import React, { Component } from 'react';
 import Order from '../../components/Order/Order';
 import axios from '../../axios-orders';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class Orders extends Component {
     state = {
-        orders: [],
-        loading: true
+        orders: null,
+        loading: true,
+        error: false
     }
 
     componentDidMount () {
@@ -24,19 +26,26 @@ class Orders extends Component {
                 this.setState({loading: false, orders: fetchedOrders})
             })
             .catch(error => {
-                this.setState({loading: false})
+                this.setState({loading: false, error: true})
             });
     }
     render() {
+        let order = <Spinner />;
+        if(this.state.error) {
+            order = <p style={{textAlign : 'center'}}>Orders can't be loaded!</p>;
+        }
+        if (this.state.orders) {
+            order = this.state.orders.map(order => (
+                <Order 
+                    key={order.id}
+                    ingredients={order.ingredients}
+                    price={+order.price}
+                /> 
+            ));
+        }
         return (
             <div>
-                {this.state.orders.map(order => (
-                    <Order 
-                        key={order.id}
-                        ingredients={order.ingredients}
-                        price={+order.price}
-                    /> 
-                ))}
+                {order}
             </div>
         );
     };
