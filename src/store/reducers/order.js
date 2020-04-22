@@ -1,4 +1,5 @@
 import * as actionTypes from "../actions/actionTypes";
+import { updateObject } from '../utlity';
 
 const initialState = {
     orders: [
@@ -42,6 +43,7 @@ const initialState = {
 }
 
 const deleteOrder = (state, action) => {
+        // eslint-disable-next-line array-callback-return
         const newOrder = state.orders.filter(order => {
             for(let key in order){
                 return key !== action.orderId;
@@ -53,53 +55,73 @@ const deleteOrder = (state, action) => {
         }
 }
 
+const purchaseInit = (state, action) => {
+    return updateObject(state, {
+        purchased: false
+    });
+}
+
+const purchaseBurgerStart = (state, action) => {
+    return updateObject(state, {
+        loading: true
+    });
+}
+
+const purchaseBurgerSuccess = (state, action) => {
+    const newOrder = updateObject(action.orderData, {
+        id: action.orderId
+    });
+    return updateObject(state, {
+        loading: false,
+        orders: state.orders.concat(newOrder),
+        purchased: true
+    });
+}
+
+const purchaseBurgerFail = (state, action) => {
+    return updateObject(state, {
+        loading: false
+    });
+}
+
+const fetchOrderStart = (state, action) => {
+    return updateObject(state, {
+        loading: true,
+        error: false
+    });
+}
+
+const fetchOrderSuccess = (state, action) => {
+    return updateObject(state, {
+        loading: false,
+        // orders: action.orders,
+        error: false
+    });
+}
+
+const fetchOrderFail = (state, action) => {
+    return updateObject(state, {
+        loading: false,
+        error: true
+    });
+}
+
 const reducer = (state = initialState, action) => {
     switch (action.type){
-        case actionTypes.PURCHASE_INIT:
-            return {
-                ...state,
-                purchased: false
-            }
+        case actionTypes.PURCHASE_INIT: 
+            return purchaseInit(state, action);
         case actionTypes.PURCHASE_BURGER_START:
-            return {
-                ...state,
-                loading: true
-            }
+            return purchaseBurgerStart(state, action);
         case actionTypes.PURCHASE_BURGER_SUCCESS:
-            const newOrder = {
-                ...action.orderData,
-                id: action.orderId
-            }
-            return {
-                ...state,
-                loading: false,
-                orders: state.orders.concat(newOrder),
-                purchased: true
-            }
+            return purchaseBurgerSuccess(state, action);
         case actionTypes.PURCHASE_BURGER_FAIL:
-            return {
-                ...state,
-                loading: false
-            }
+            return purchaseBurgerFail(state, action);
         case actionTypes.FETCH_ORDERS_START:
-            return {
-                ...state,
-                loading: true,
-                error: false
-            }
+            return fetchOrderStart(state, action);
         case actionTypes.FETCH_ORDERS_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                // orders: action.orders,
-                error: false
-            }
+            return fetchOrderSuccess(state, action);
         case actionTypes.FETCH_ORDERS_FAIL:
-            return {
-                ...state,
-                loading: false,
-                error: true
-            }
+            return fetchOrderFail(state, action);
         case actionTypes.DELETE_ORDER_START:
             return deleteOrder(state, action);
         default:
