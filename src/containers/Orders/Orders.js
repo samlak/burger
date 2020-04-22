@@ -1,54 +1,95 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 
-// import classes from './Orders.module.css';
+import classes from './Orders.module.css'
+
 import Order from '../../components/Order/Order';
 import axios from '../../axios-orders';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import * as actions from '../../store/actions/index';
+import Aux from '../../hoc/Auxillary/Auxillary';
+import Modal from '../../components/UI/Modal/Modal';
+import Button from '../../components/UI/Button/Button';
 
 class Orders extends Component {
     state = {
-        orders: null,
-        loading: true,
-        error: false
+        modalOpen: false
+    }
+    
+    componentDidMount () {
+        this.props.onFetchOrders();
     }
 
-    componentDidMount () {
-        axios.get('/orders.json')
-            .then(res => {
-                const fetchedOrders = [];
-                for (let key in res.data){
+    openModal(){
+        this.setState({modalOpen: true});
+    }
+
+    closeModal(){
+        this.setState({modalOpen: false});
+    }
+
+    deleteHandler(orderId){
+        this.props.onDeleteOrders(orderId);
+        this.setState({modalOpen: false});
+    }
+    render() {
+        let orders = <Spinner />;
+        // if(this.props.error) {
+        //     orders = <p style={{textAlign : 'center'}}>Orders can't be loaded!</p>;
+        // }
+        if (!this.props.loading) {  
+            const fetchedOrders = [];
+            // eslint-disable-next-line array-callback-return
+            this.props.orders.map((order) => {
+                for (let key in order){
                     fetchedOrders.push({
-                        ...res.data[key],
+                        ...order[key],
                         id: key
                     });
                 }
-                this.setState({loading: false, orders: fetchedOrders})
-            })
-            .catch(error => {
-                this.setState({loading: false, error: true})
             });
-    }
-    render() {
-        let order = <Spinner />;
-        if(this.state.error) {
-            order = <p style={{textAlign : 'center'}}>Orders can't be loaded!</p>;
-        }
-        if (this.state.orders) {
-            order = this.state.orders.map(order => (
-                <Order 
-                    key={order.id}
-                    ingredients={order.ingredients}
-                    price={+order.price}
-                /> 
+            // orders = this.props.orders.map(order => (  
+            orders = fetchedOrders.map(order => (  
+                <div>
+                    <Order 
+                        key={order.id}
+                        ingredients={order.ingredients}
+                        price={+order.price}
+                        delete={() => this.openModal()}
+                    /> 
+                    <Modal show={this.state.modalOpen} modalClosed={() => this.closeModal()}>
+                        <div className={classes.Modal}>
+                            <p>This action is irreversible! Do you still want to continue?</p>
+                            
+                            <Button btnType="Success" clicked={() => this.closeModal()}>Cancel</Button>
+                            <Button btnType="Danger" clicked={() => this.deleteHandler(order.id)}>Delete</Button>
+                        </div>
+                    </Modal>
+                </div>
             ));
         }
         return (
-            <div>
-                {order}
-            </div>
+            <Aux>
+                {orders}
+            </Aux>
         );
     };
 };
 
-export default withErrorHandler(Orders, axios);
+const mapsStateToProps = state => {
+    return {
+        orders: state.order.orders,
+        loading: state.order.loading,
+        error: state.order.error
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onFetchOrders: () => dispatch(actions.fetchOrders()),
+        onDeleteOrders: (orderId) => dispatch(actions.deleteOrder(orderId))
+    }
+}
+
+export default connect(mapsStateToProps, mapDispatchToProps)(withErrorHandler(Orders, axios));
