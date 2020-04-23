@@ -35,22 +35,11 @@ class Orders extends Component {
     }
     render() {
         let orders = <Spinner />;
-        // if(this.props.error) {
-        //     orders = <p style={{textAlign : 'center'}}>Orders can't be loaded!</p>;
-        // }
-        if (!this.props.loading) {  
-            const fetchedOrders = [];
-            // eslint-disable-next-line array-callback-return
-            this.props.orders.map((order) => {
-                for (let key in order){
-                    fetchedOrders.push({
-                        ...order[key],
-                        id: key
-                    });
-                }
-            });
-            // orders = this.props.orders.map(order => (  
-            orders = fetchedOrders.map(order => (  
+        if(this.props.error) {
+            orders = <p style={{textAlign : 'center'}}>Orders can't be loaded!</p>;
+        }
+        if (!this.props.loading && !this.props.error) {  
+            orders = this.props.orders.map(order => (  
                 <div>
                     <Order 
                         key={order.id}

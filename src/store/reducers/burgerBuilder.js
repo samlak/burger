@@ -2,13 +2,7 @@ import * as actionTypes from "../actions/actionTypes";
 import { updateObject } from '../utlity';
 
 const initialState = {
-    // ingredients: null,
-    ingredients: {
-        salad: 0,
-        bacon: 0,
-        cheese: 0,
-        meat: 0
-    },
+    ingredients: null,
     totalPrice: 4,
     error: false
 };
@@ -43,13 +37,12 @@ const removeIngredient = (state, action) => {
 
 const setIngredients = (state, action) => {
     return updateObject( state, {
-        // ingredients: action.ingredients,
-        // ingredients: {
-        //     salad:action.ingredients.salad,
-        //     bacon:action.ingredients.bacon,
-        //     cheese:action.ingredients.cheese,
-        //     meat:action.ingredients.meat
-        // },
+        ingredients: {
+            salad:action.ingredients.salad,
+            bacon:action.ingredients.bacon,
+            cheese:action.ingredients.cheese,
+            meat:action.ingredients.meat
+        },
         totalPrice: 4,
         error: false
     });

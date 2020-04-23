@@ -47,43 +47,41 @@ export const fetchOrdersSuccess = (orders) => {
     }
     
 }
-// export const fetchOrdersFail = (error) => {
-//     return {
-//         type: actionTypes.FETCH_ORDERS_FAIL,
-//         error
-//     }
-// }
+export const fetchOrdersFail = (error) => {
+    return {
+        type: actionTypes.FETCH_ORDERS_FAIL,
+        error
+    }
+}
 export const fetchOrdersStart = () => {
     return {
         type: actionTypes.FETCH_ORDERS_START
     }
 }
 
-export const fetchOrders = (orders) => {
+export const fetchOrders = () => {
     return dispatch => {
         dispatch(fetchOrdersStart());
-        dispatch(fetchOrdersSuccess(orders));
-        // axios.get('/orders.json')
-        //     .then(res => {
-        //         const fetchedOrders = [];
-        //         for (let key in res.data){
-        //             fetchedOrders.push({
-        //                 ...res.data[key],
-        //                 id: key
-        //             });
-        //         }
-        //         dispatch(fetchOrdersSuccess(fetchedOrders));
-        //     })
-        //     .catch(error => {
-        //         dispatch(fetchOrdersFail(error));
-        //     });
+        axios.get('/orders.json')
+            .then(res => {
+                const fetchedOrders = [];
+                for (let key in res.data){
+                    fetchedOrders.push({
+                        ...res.data[key],
+                        id: key
+                    });
+                }
+                dispatch(fetchOrdersSuccess(fetchedOrders));
+            })
+            .catch(error => {
+                dispatch(fetchOrdersFail(error));
+            });
     }
 }
 
-export const deleteOrderSuccess = (orderId) => {
+export const deleteOrderSuccess = () => {
     return {
-        type: actionTypes.DELETE_ORDER_SUCCESS,
-        orderId
+        type: actionTypes.DELETE_ORDER_SUCCESS
     }
     
 }
@@ -93,15 +91,24 @@ export const deleteOrderFail = (error) => {
         error
     }
 }
-export const deleteOrderStart = (orderId) => {
+export const deleteOrderStart = () => {
     return {
-        type: actionTypes.DELETE_ORDER_START,
-        orderId
+        type: actionTypes.DELETE_ORDER_START
     }
 }
 
 export const deleteOrder = (orderId) => {
     return dispatch => {
-        dispatch(deleteOrderStart(orderId));
+        dispatch(deleteOrderStart());
+        axios.delete(`/orders/${orderId}.json`, {headers: { "Access-Control-Allow-Origin": "*" }})
+            .then(response => {  
+                console.log(response);
+                console.log(orderId);
+                dispatch(deleteOrderSuccess());
+                dispatch(fetchOrders());
+            })
+            .catch(error => {  
+                dispatch(deleteOrderFail(error));
+            });
     }
 }

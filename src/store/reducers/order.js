@@ -2,57 +2,81 @@ import * as actionTypes from "../actions/actionTypes";
 import { updateObject } from '../utlity';
 
 const initialState = {
-    orders: [
-        {
-            'abcde': {
-                ingredients: {
-                    salad: 1,
-                    bacon: 2,
-                    cheese: 0,
-                    meat: 0
-                },
-                price: 5.0
-            }
-        },
-        {
-            'bcdef': {
-                ingredients: {
-                    salad: 0,
-                    bacon: 0,
-                    cheese: 3,
-                    meat: 0
-                },
-                price: 7.6
-            }
-        },
-        {
-            'cdefg': {
-                ingredients: {
-                    salad: 0,
-                    bacon: 2,
-                    cheese: 2,
-                    meat: 1
-                },
-                price: 17.0
-            }
-        },
-    ],
+    // orders: [
+    //     {
+    //         'abcde': {
+    //             ingredients: {
+    //                 salad: 1,
+    //                 bacon: 2,
+    //                 cheese: 0,
+    //                 meat: 0
+    //             },
+    //             price: 5.0
+    //         }
+    //     },
+    //     {
+    //         'bcdef': {
+    //             ingredients: {
+    //                 salad: 0,
+    //                 bacon: 0,
+    //                 cheese: 3,
+    //                 meat: 0
+    //             },
+    //             price: 7.6
+    //         }
+    //     },
+    //     {
+    //         'cdefg': {
+    //             ingredients: {
+    //                 salad: 0,
+    //                 bacon: 2,
+    //                 cheese: 2,
+    //                 meat: 1
+    //             },
+    //             price: 17.0
+    //         }
+    //     },
+    // ],
+    orders: [],
     loading: false,
     purchased: false,
     error: false
 }
 
-const deleteOrder = (state, action) => {
-        // eslint-disable-next-line array-callback-return
-        const newOrder = state.orders.filter(order => {
-            for(let key in order){
-                return key !== action.orderId;
-            }
-        });
-        return {
-            ...state,
-            orders: newOrder
-        }
+// const deleteOrder = (state, action) => {
+//         // eslint-disable-next-line array-callback-return
+//         const newOrder = state.orders.filter(order => {
+//             for(let key in order){
+//                 return key !== action.orderId;
+//             }
+//         });
+//         return {
+//             ...state,
+//             orders: newOrder
+//         }
+// }
+
+
+const deleteOrderStart = (state, action) => {
+    return updateObject(state, {
+        loading: true,
+        error: false
+    });
+}
+
+const deleteOrderSuccess = (state, action) => {
+    return updateObject(state, {
+        loading: false,
+        // orders: action.orders,
+        error: false
+    });
+}
+
+const deleteOrderFail = (state, action) => {
+    return updateObject(state, {
+        loading: false,
+        error: true
+    });
 }
 
 const purchaseInit = (state, action) => {
@@ -94,7 +118,7 @@ const fetchOrderStart = (state, action) => {
 const fetchOrderSuccess = (state, action) => {
     return updateObject(state, {
         loading: false,
-        // orders: action.orders,
+        orders: action.orders,
         error: false
     });
 }
@@ -123,7 +147,11 @@ const reducer = (state = initialState, action) => {
         case actionTypes.FETCH_ORDERS_FAIL:
             return fetchOrderFail(state, action);
         case actionTypes.DELETE_ORDER_START:
-            return deleteOrder(state, action);
+            return deleteOrderStart(state, action);
+        case actionTypes.DELETE_ORDER_SUCCESS:
+            return deleteOrderSuccess(state, action);
+        case actionTypes.DELETE_ORDER_FAIL:
+            return deleteOrderFail(state, action);
         default:
             return state
     }
