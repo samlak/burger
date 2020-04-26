@@ -21,10 +21,10 @@ export const purchaseBurgerStart = () => {
     }
 }
 
-export const purchaseBurger = (orderData) => {
+export const purchaseBurger = (orderData, token) => {
     return dispatch => {
         dispatch(purchaseBurgerStart());
-        axios.post('/orders.json', orderData)
+        axios.post('/orders.json?auth=' + token, orderData)
             .then(response => {  
                 dispatch(purchaseBurgerSuccess(response.name, orderData));
             })
@@ -59,10 +59,10 @@ export const fetchOrdersStart = () => {
     }
 }
 
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
     return dispatch => {
         dispatch(fetchOrdersStart());
-        axios.get('/orders.json')
+        axios.get('/orders.json?auth=' + token)
             .then(res => {
                 const fetchedOrders = [];
                 for (let key in res.data){
@@ -97,15 +97,15 @@ export const deleteOrderStart = () => {
     }
 }
 
-export const deleteOrder = (orderId) => {
+export const deleteOrder = (orderId, token) => {
     return dispatch => {
         dispatch(deleteOrderStart());
-        axios.delete(`/orders/${orderId}.json`, {headers: { "Access-Control-Allow-Origin": "*" }})
+        axios.delete(`/orders/${orderId}.json?auth=${token}`, {headers: { "Access-Control-Allow-Origin": "*" }})
             .then(response => {  
                 console.log(response);
                 console.log(orderId);
                 dispatch(deleteOrderSuccess());
-                dispatch(fetchOrders());
+                dispatch(fetchOrders(token));
             })
             .catch(error => {  
                 dispatch(deleteOrderFail(error));
