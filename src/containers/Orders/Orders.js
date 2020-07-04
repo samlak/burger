@@ -18,7 +18,7 @@ class Orders extends Component {
     }
     
     componentDidMount () {
-        this.props.onFetchOrders(this.props.token);
+        this.props.onFetchOrders(this.props.token, this.props.userId);
     }
 
     openModal(){
@@ -71,13 +71,14 @@ const mapsStateToProps = state => {
         orders: state.order.orders,
         loading: state.order.loading,
         token: state.auth.token,
-        error: state.order.error
+        error: state.order.error,
+        userId: state.auth.userId
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onFetchOrders: (token) => dispatch(actions.fetchOrders(token)),
+        onFetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId)),
         onDeleteOrders: (orderId, token) => dispatch(actions.deleteOrder(orderId, token))
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import classes from './Order.module.css';
-import Button from '../UI/Button/Button'
+import Button from '../UI/Button/Button';
 
 const Order = (props) => {
     const ingredients = [];
