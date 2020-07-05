@@ -40,9 +40,8 @@ class Orders extends Component {
         }
         if (!this.props.loading && !this.props.error) {  
             orders = this.props.orders.map(order => (  
-                <div>
+                <div key={order.id}>
                     <Order 
-                        key={order.id}
                         ingredients={order.ingredients}
                         price={+order.price}
                         delete={() => this.openModal()}

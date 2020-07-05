@@ -103,8 +103,6 @@ export const deleteOrder = (orderId, token) => {
         dispatch(deleteOrderStart());
         axios.delete(`/orders/${orderId}.json?auth=${token}`, {headers: { "Access-Control-Allow-Origin": "*" }})
             .then(response => {  
-                console.log(response);
-                console.log(orderId);
                 dispatch(deleteOrderSuccess());
                 dispatch(fetchOrders(token));
             })
