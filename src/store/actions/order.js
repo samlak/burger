@@ -1,5 +1,4 @@
 import * as actionTypes from './actionTypes';
-import axios from '../../axios-orders';
 
 export const purchaseBurgerSuccess = (id, orderData) => {
     return {
@@ -22,16 +21,21 @@ export const purchaseBurgerStart = () => {
 }
 
 export const purchaseBurger = (orderData, token) => {
-    return dispatch => {
-        dispatch(purchaseBurgerStart());
-        axios.post('/orders.json?auth=' + token, orderData)
-            .then(response => {  
-                dispatch(purchaseBurgerSuccess(response.name, orderData));
-            })
-            .catch(error => {  
-                dispatch(purchaseBurgerFail(error));
-            });
+    return {
+        type: actionTypes.PURCHASE_BURGER,
+        orderData,
+        token
     }
+    // return dispatch => {
+    //     dispatch(purchaseBurgerStart());
+    //     axios.post('/orders.json?auth=' + token, orderData)
+    //         .then(response => {  
+    //             dispatch(purchaseBurgerSuccess(response.name, orderData));
+    //         })
+    //         .catch(error => {  
+    //             dispatch(purchaseBurgerFail(error));
+    //         });
+    // }
 }
 
 export const purchaseInit = () => {
@@ -60,24 +64,29 @@ export const fetchOrdersStart = () => {
 }
 
 export const fetchOrders = (token, userId) => {
-    return dispatch => {
-        dispatch(fetchOrdersStart());
-        const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId +'"';
-        axios.get('/orders.json' + queryParams)
-            .then(res => {
-                const fetchedOrders = [];
-                for (let key in res.data){
-                    fetchedOrders.push({
-                        ...res.data[key],
-                        id: key
-                    });
-                }
-                dispatch(fetchOrdersSuccess(fetchedOrders));
-            })
-            .catch(error => {
-                dispatch(fetchOrdersFail(error));
-            });
+    return {
+        type: actionTypes.FETCH_ORDERS,
+        token,
+        userId
     }
+    // return dispatch => {
+    //     dispatch(fetchOrdersStart());
+    //     const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId +'"';
+    //     axios.get('/orders.json' + queryParams)
+    //         .then(res => {
+    //             const fetchedOrders = [];
+    //             for (let key in res.data){
+    //                 fetchedOrders.push({
+    //                     ...res.data[key],
+    //                     id: key
+    //                 });
+    //             }
+    //             dispatch(fetchOrdersSuccess(fetchedOrders));
+    //         })
+    //         .catch(error => {
+    //             dispatch(fetchOrdersFail(error));
+    //         });
+    // }
 }
 
 export const deleteOrderSuccess = () => {
@@ -99,15 +108,20 @@ export const deleteOrderStart = () => {
 }
 
 export const deleteOrder = (orderId, token) => {
-    return dispatch => {
-        dispatch(deleteOrderStart());
-        axios.delete(`/orders/${orderId}.json?auth=${token}`, {headers: { "Access-Control-Allow-Origin": "*" }})
-            .then(response => {  
-                dispatch(deleteOrderSuccess());
-                dispatch(fetchOrders(token));
-            })
-            .catch(error => {  
-                dispatch(deleteOrderFail(error));
-            });
+    return {
+        type: actionTypes.DELETE_ORDER,
+        orderId, 
+        token
     }
+    // return dispatch => {
+    //     dispatch(deleteOrderStart());
+    //     axios.delete(`/orders/${orderId}.json?auth=${token}`, {headers: { "Access-Control-Allow-Origin": "*" }})
+    //         .then(response => {  
+    //             dispatch(deleteOrderSuccess());
+    //             dispatch(fetchOrders(token));
+    //         })
+    //         .catch(error => {  
+    //             dispatch(deleteOrderFail(error));
+    //         });
+    // }
 }
