@@ -120,6 +120,7 @@ class Auth extends Component {
                     btnType="Danger">
                     SWITCH TO {this.state.isSignup ? 'SIGNIN': 'SIGNUP'}
                 </Button>
+                <p>Email: admin@admin.com <br/> Password: password</p>
             </div>
         );
     };

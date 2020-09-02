@@ -24,7 +24,7 @@ const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX
 
 const sagaMiddleware = createSagaMiddleware();
 
-const store = createStore(rootReducer, composeEnhancers(
+const store = createStore(rootReducer, composeEnhancers, (
   applyMiddleware(thunk, sagaMiddleware)
 ));
 
